@@ -1,0 +1,287 @@
+There are 2 ways in customizing the spring boot application
+1. external configuration approach
+  1.1 spring boot banner.
+    spring.main.banner-mode=OFF|LOG|CONSOLE
+    spring.banner.location=
+    spring.banner.imageLocation=
+    classpath: banner.txt, banner.(jpg|png|gif)    
+    
+  1.2 lazy instantiation of the beans in ioc container
+    spring.main.lazyInitialization=false|true
+    
+2. fluent builder api
+Through programmatic interfaces we can customize spring boot application. For this spring boot has provided an class called SpringApplicationBuilder which is designed on fluent builder design pattern.
+
+What are factory classes or builder classes, what is the purpose of them?
+Factories or Builders both are used for creating the object of another class. These falls under creational design patterns of GOF.
+We use Factory or Builder design patterns for following reasons.
+1. If creating an object of another class is very complex, then to avoid all the classes of our application in writing that complex logic we take the of factory or builder pattern
+For e.g..
+  
+class A {     class B {     class C {}
+  B b;         C c;
+  A(B b) {}    B(C c) {}
+}             }
+----------------------------------------
+other classes of our project wants to use "class A", then in all the classes we need to write complex logic to create object of A class 
+class P {
+  void m1() {
+    C c = new C();
+    B b = new B(c);
+    A a = new A(b);
+  }
+}
+
+class Q {
+  void m3() {
+    C c = new C();
+    B b = new B(c);
+    A a = new A(b);
+  }
+}
+If tomorrow instantiation logic of A has been changed we need to change both P & Q classes instead use Factory or a Builder class for creating A
+class AFactory {
+  public static A createA() {
+      C c = new C();
+      B b = new B(c);
+      A a = new A(b);
+      return a;
+  }
+}
+  
+class P {
+  void m1() {    
+    A a = AFactory.createA();
+  }
+}
+
+class Q {
+  void m3() {
+    A a = AFactory.createA();
+  }
+}  
+
+2. The second reason for using the factory | builder class is to hide the implementation class of another class from our class, through which we can achieve loosely coupling.
+  
+interface IA {      class A1 implements IA {      class A2 implements IA {
+  int m2(int i);       int m2(int i) {}             int m2(int i) {}
+}                   }                             }
+-----------------------------------------------------------------------------
+class P  {           class Q {
+  IA a;               IA  a;
+  void m1() {         int d5() {
+    a = new A1();      a = new A1();
+  }                   }
+}                    }
+
+In the above we want to switch P & Q classes from A1 to A2 then we need to modify the code across both the classes, because there are tightly coupled with A1.
+Instead of this use a Factory or Builder to hide the implementation class name, so any change in class only will affect factory|builder only.
+
+class AFactory {
+  public static IA createA() {
+    IA a = new A1();
+    return a;
+  }
+}  
+  
+class P  {                             class Q {
+  IA a;                                  IA  a;
+  void m1() {                            int d5() {
+    a = AFactory.createA();               a = AFactory.createA();
+  }                                      }
+}                                      }
+Now if we want to switch from A1 to A2 change the code in factory.
+  
+What is the difference between a Factory and Builder class?
+  
+Factory class = always instantiates the object of another class as an empty object only.
+Builder class = it is meant for instantiating the object of another class with pre-populated data we passed to the builder.
+  
+class A {
+  int i;
+  int j;
+  int k;
+  // 10 attributes
+  public void setI(int i) {}
+  public void setJ(int j) {}
+  public void setK(int k) {}
+}  
+
+class ABuilder {
+  int i;
+  int j;
+  int k;
+  // 10 builders
+  public ABuilder(int i) {}
+  
+  public ABuilder i(int i) {
+    this.i = i;
+    return this;
+  }
+  public int i() {}
+  
+  public ABuilder j(int j) {
+    this.j = j;
+    return this;
+  }
+  public int j() {}
+  
+  public ABuilder k(int k) {
+    this.k = k;
+    return this;
+  }
+  public int k() {}
+  // 10 accessors
+  
+  public A build() {    // static factory method in factory class
+    A a = new A();      // instance factory method
+    a.setI(i);
+    a.setJ(j);
+    a.setK(k);
+    return a;
+  }  
+}
+A a = new ABuilder(10).j(20).k(30).build();  
+In this way we can instantiate the object of A class using ABuilder in single line of code which is called FluentBuilder api or method chaining.
+  
+---------------------------------------------------------------------------------------------------------------
+The spring boot application will start execution by calling the static method run() on SpringApplication class.
+  SpringApplication.run(Config.class, args);
+This method performs the various different startup activities before creating the ioc container, if we want to change the defaults of this class, we can use SpringApplicationBuilder.
+  
+SpringApplicationBuilder acts as an builder class in instantiating the object of SpringApplication, with settings or configurations with which we want to use in starting the application.
+once the SpringApplicationBuilder has been created with settings or configurations call build() method to create the object of SpringApplication class.
+On the instance of SpringApplication class call run(args). so that with customized settings spring application will perform startup activities. 
+  
+1. We can programmatically turn off or change the spring boot banner.
+  
+@SpringBootApplication  
+class BootApplication {
+  public static void main(String args[]) {
+    SpringApplicationBuilder builder = new SpringApplicationBuilder(BootApplication.class);
+    builder.banner(BannerMode.OFF);
+    SpringApplication springApplication = builder.build();
+    
+    ApplicationContext context = springApplication.run(args);
+    
+    // dont call SpringApplication.run(Config.class, args); // this will bring up spring boot application with default settings  
+  
+        
+  }  
+}  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+             
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+

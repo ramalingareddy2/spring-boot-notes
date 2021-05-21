@@ -1,0 +1,44 @@
+Spring Boot has provided starter dependencies that can be added to the maven project to quickly setup Spring Framework applications.
+While working on Spring Framework project setting up the project with right combination of dependencies is always painful and takes more amount of time.
+We need to take care of identifying the Module dependencies of the Spring Framework based on the Type of the application we are building including their version compatibility.
+In addition to the above we need to identify the third-party libraries required by the Spring Framework modules and their compatibility versions.
+This entire process of setting up the Spring Framework application and debugging dependencies takes lot of time and kills the developers productivity to overcome this problem Spring Boot has provided Spring Boot Starter dependencies.
+
+projectroot
+|-src
+  |-main
+    |-java
+    |-resources
+  |-test
+    |-java
+    |-resources
+|-pom.xml
+
+pre-built projects that are packaged and shipped as part of maven repository (groupId, artifactId, version)
+mvn archetype:generate = tool
+
+Transitive dependencies
+if we add a dependency in to our project, the maven takes care of pulling the relevant transitive dependencies of that library based on the declaration.
+
+project1 (library) - package and publish into maven repository (project1)
+|-src
+|-pom.xml
+  |-groupId=mycompany.org artifactId=project1 version=1.0.0
+  |-dependencies
+    |-log4j
+    |-commons-logging
+
+project2
+|-pom.xml
+      |-dependency
+        |-groupId=mycompany.org, artifactId=project1, version=1.0.0
+
+spring-boot-starter (maven project)
+|-src (zero code)
+  |-main
+    |-java
+    |-resources
+|-pom.xml
+  |-spring-core
+  |-spring-beans
+  |-commons-logging

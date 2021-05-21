@@ -1,0 +1,114 @@
+Spring Framework provides lot of functionality in building an application, but in order to make the spring framework work we need to write configuration information configuring not only our application classes even the spring framework classes as well to tailer fit in building our application.
+
+Looks like at somepoint of time we are writing too much amount of configuration, configuring the framework work components that makes the developers difficult in using the spring framework.
+To fix the above issue spring has comeup with many alternates like
+1. Streoetype annotations = These help us in reducing the amount of configuration we need to write in configuring our application classes, but still for framework/third-party libraries provided classes streotype annotations will not help
+2. java configuration approach = Looks like more than the configuration we write in xml, we need to write more lines of code in configuring spring components, doesnt seems to have solved the problem.
+
+Both the above cases the biggest problem is
+- The developer has to know the knowledge of the Framework classes, even though we dont use them directly as part of our classes. still need to write configuration information configuring these classes. 
+This make developer feel more complex in working with spring framework as he has to know the classnames and the attribtues and configuration options available.
+
+3. Configurer classes
+The configurer classes takes the parameter values with which we want spring framework class to be configured as part of the framework. so that developer need not worry about classnames and attributes to configure them as bean definitions.
+
+But looks like across the applications developer has to write the Configurer class with similar configuration values in configuring the framework classes which seems to again the boiler platelogic in tuning the framework.
+
+That is where to overcome these drawbacks in working with spring and to speed up development of applications based on Spring Framework, Spring has introduced Spring Boot.
+
+
+What is Spring Boot? What does it provides?
+Spring boot is an module that addresses the non-functional requirements in building an Spring Framework based application. 
+  
+In general people this Spring Boot can be used for building an functional aspect of an application for e.g.. spring jdbc is used for building persistency-tier of an application similarly spring mvc can be used for building web applications. Unlike these modules spring boot is not used for building any of the functional aspects of an application rather it helps the developers in speedingup the development of a Spring based application.
+  
+How and in which Spring Boot helps us in building the Spring Framework applications fast?
+It has provided 6 features as part of its module which can be used for speeding up the application development.
+  1. Auto-configurations  
+  Framework is providing functionality to our application. When Spring Framework knows the information about our application classes then it can add the functionality to our classes. How do we tell information about our classes to the Spring Framework?
+  By writing configuration, this seems to be justifiable
+  
+  In addition to configuring our classes, we need to configure Framework classes also as bean definitions to make Spring Framework work for my application. Now the question that arises in the developers mind is,
+  the information about the Framework components and configuration parameters/attributes using which these classes has to be configured to make Framework works is know / aware by the Framework developers also. In this case why Framework is enforcing the developers to configure the framework components in our application, why can they themselve autoconfigure/tune the framework for an application to work.
+    
+    
+
+  2. Starter Dependencies
+  3. Embedded Servers
+  4. Actuator Endpoints 
+  5. DevTools
+  6. Spring Boot CLI
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,215 @@
+Spring Boot provides the non-functional aspects of building an Spring Framework application, it is opinionated in configuring the Framework components based on the Framework module dependencies and Third-Party Libraries. There are certain goals of Spring Boot.
+  1. Jump start experience in building an Spring Framework application
+  2. Rapid application development
+  3. Auto Configurations helps us in quickly configuring the Framework components with defaults, and if the requirements diverges with a simple configurations we should be able to tune the components.
+  4. Production grade application deployment
+  5. Non-Functional aspects of building application like debugging, autorestart during development, metrics, memory management etc
+
+1. AutoConfigurations = opinionated about the framework components in configuring them automatically
+2. Starter Dependencies = Jump start experience in setting up the Spring Framework project
+3. Actuator Endpoints = Development to Production grade application deployment can be achieved using actuator endpoints
+4. DevTools = helps us in debugging the application during the development time, hotcode replacement, auto restart of the servers are few features of devtools
+5. Embedded Containers = We can run an Web Application out as an standalone java application from main method. It helps us in acheiving ci/cd pipeline integrations. Best suited for microservices based application development and deployments.
+  
+When we use Embedded Containers, the container is shipped as part of the application code as a dependency library, so that we can run our application out of code itself directly without the need of setting up any environment/container.  
+6. Spring Boot CLI = We can build prototype code and can execute with minimal efforts using Spring CLI.
+Spring Command Line Interface is a shell provided by Spring Boot that can be installed on the our computers. We can write Spring Framework code like a RestController directly and can get executed quickly using the CLI.
+The main purpose is to run prototypes or experimental code quickly.
+----------------------------------------------------------------------------------------------------------------
+Developing our First Spring Boot Application.
+-----------------------------------------------
+To help us in configuring and setting up the Spring Framework application, Spring Boot has provided starter dependencies. Spring Boot has provided lot of starter dependencies each pertaining to different technologies in which we want to develop the spring framework applications.
+  
+groupId: org.springframework.boot
+artifactId: spring-boot-starter-*
+                               -jdbc
+                               -webmvc
+                               -datajpa
+                               -mango
+                               -casendra
+                               -security
+Now while creating the maven project for developing spring boot application pick the appropriate starter dependency so that it takes care of adding relevant spring module dependencies and third-party libraries for your project.
+  
+  
+pom.xml
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.4.3</version>
+    <relativePath/>
+  </parent>
+  
+  <groupId><groupId>
+  <artifactId><artifactId>
+  <version></version>
+  <packaging>jar</packaging>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>      
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>      
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-datajpa</artifactId>      
+    </dependency>
+  </dependencies>
+</project>
+--------------------------------------------------------------------------------------
+package com.bootapplication.beans;
+@Component
+class Radio {
+  @Autowired
+  private Receiver receiver;
+  
+  public void listen(int frequency) {
+    receiver.tune(frequency);
+  }
+
+}
+
+package com.bootapplication.beans;
+@Component
+class Receiver {
+  public void tune(int frequency) {
+    System.out.println("tunning to frequency : " + frequency);
+  }
+}
+
+package com.bootapplication;
+
+@SpringBootApplication
+class BootApplication {
+  public static void main(String[] args) {
+    ApplicationContext context = SpringApplication.run(BootApplication.class);  
+    Radio radio = context.getBean(Radio.class);
+    radio.listen(98);    
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

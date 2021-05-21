@@ -1,0 +1,4 @@
+spring:
+  banner:
+    location: classpath:banner.txt  application:    name: boot external configuration application
+  main:    lazy-initialization: true

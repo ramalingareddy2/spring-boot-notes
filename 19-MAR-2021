@@ -1,0 +1,85 @@
+@Component
+@ConfigurationProperties(prefix="db")
+class JdbcDataSource {
+  private String driverClassname;
+  private String url;
+  private String username;
+  private String password;
+  
+  // accessors
+}
+
+// no source code
+class JdbcTransactionManager {
+  private JdbcDataSource jdbcDataSource;
+  private int timeout;
+  private boolean autocommit;
+  
+  // accessors
+}
+
+application-dev.properties
+-------------------------------
+db.driverClassname=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/sdb
+db.username=root
+db.password=root
+tm.timeout=10
+tm.autocommit=false
+  
+application-test.properties
+---------------------------
+db.driverClassname=com.jdbc.driver.OracleDriver
+db.url=jdbc:oracle:thin:@1521:xe
+db.username=root
+db.password=root
+tm.timeout=10
+tm.autocommit=false
+
+application.properties
+-----------------------
+spring.profiles.active=test
+
+  
+  
+@SpringBootApplication  
+class BootProfileApplication {
+  @Autowired
+  private Environment env;
+  
+  @Bean(autowire=AutoWire.ByType)
+  public JdbcTransactionManager jdbcTransactionManager() {
+    JdbcTransactionManager jtm = new JdbcTransactionManager();
+    
+    jtm.setTimeOut(Integer.parseInt(env.getProperty("tm.timeout")));
+    jtm.setAutoCommit(Boolean.valueOf(env.getProperty("tm.autocommit")));
+    
+    return jtm;
+  }
+  
+  public static void main(String[] args) {
+    ApplicationContext context = SpringApplication.run(BootProfileApplication.class, args);
+    JdbcTransactionManager jtm = context.getBean(JdbcTransactionManager.class);
+    sop(jtm);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  

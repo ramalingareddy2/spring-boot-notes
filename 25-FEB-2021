@@ -1,0 +1,43 @@
+Spring Boot is used for addressing the non-functional requirements in developing an Spring Framework based application. Using Spring Boot we can speed up the application development and delivery as well.
+What features of the Spring Boot help us in building the applications quickly?
+1. Auto Configurations
+2. Starter Dependencies
+3. Actuator Endpoints
+4. DevTools
+5. Embedded Containers
+6. Spring Boot CLI
+
+#1 Auto Configurations
+While working on developing the application using Spring Framework, along with our application components we need to configure Spring Framework classes also in ioc container as bean definitions. Looks like we need to pour lot of information in configuring the framework components that makes Spring Framework difficult to use takes lot of time for development, here comes auto-configuration to rescue.
+  
+The information about the Framework components and their attributes to be configured with values is known not only to the developer even the Framework developers also aware of it. In such a case why dont the Framework by itself autoconfigure their components in making our application work, this what the underlying concept of Auto Configurations.
+  
+Spring Boot is opiniated in autoconfiguring the framework components. It looks for the libraries in the classpath of our application and derives what framework components are required for our application.It takes care of configuring these components with their relevant default values.
+For e.g.. When Spring Boot finds spring-jdbc library as part of the classpath, it looks for which database driver we are using in the application, lets say we have h2 as a database, then configures DriverManagerDataSource, DataSourceTransactionManager, JdbcTemplate bean definitions with the defaults pointing to h2 database.
+
+If the requirements are diverging from the defaults, Spring Boot takes care of taking the values from the programmer in configuring the Framework components.
+  
+By using auto-configurations developer can directly jump start in writing the business aspects of the application leaving the Framework components to the Spring Boot.
+  
+#2 Spring Boot Starter Dependencies = these are maven archeytpes created by spring boot to help us in quickly configuring the dependencies of our project. boot starter dependencies takes care of configuring the other spring framework module dependencies and external library dependencies with the relevant versions based on the Spring Framework version we are using.
+  
+tech.sriman@gmail.com
+  
+mukeshit.hyd@gmail.com
+NIC = National Informetics Center (Hyderabad)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

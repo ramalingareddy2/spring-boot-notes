@@ -1,0 +1,61 @@
+@SpringBootApplication
+It is equal to 3 annotations
+1. @Configuration
+2. @ComponentScan
+3. @EnableAutoConfiguration
+Instead of writing 3 annotations on top of our class Spring Boot has provided one single annotation.
+---------------------------------------------------------------------------------------------------------------  
+What will happens when we execute the below line of code?
+SpringApplication.run(JavaConfig.class, args);
+
+The entire spring boot system has been build into a class called SpringApplication class. When we call a static method run() on this by passing JavaConfig.class, it takes care of performing several startup activities in running a spring boot application.
+  
+1. creates an empty Environment object  
+2. Detects the external configurations of our application and gathers them and loads into Environment object
+3. print spring boot banner
+4. it detects/identifies the type of the application using the property WebApplicationType
+    4.1 it checks to see under the classpath of our application for spring webmvc jar, if found it treats the WebApplicationType = WEB and creates the ioc container of AnnotationConfigServletWebServerApplicationContext
+    4.2 if not then it checks for web flux jars under the classpath if found then treats the WebApplicationType as REACTIVE and creates the ioc container of type AnnotationConfigReactiveWebServerApplicationContext
+    4.3 if none of the above, then it creates an ioc container of type AnnotationConfigApplicationContext
+5. It instantiates the SpringFactories and register them with ioc container
+6. It executes the ApplicationContextInitializer 
+7. prepareContext
+8. refreshContext
+9. executes the commandLineRunners and applicationRunners and returns the reference of ioc container to us
+10. during the above operations being perform at various different stages, it is going to publish the events and executes the listeners
+----------------------------------------------------------------------------------------------------------------
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

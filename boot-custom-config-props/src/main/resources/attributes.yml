@@ -1,0 +1,8 @@
+passport:
+  passportNo: 290322
+  passportHolderName: Rock
+  dob: 23-02-1999
+  gender: Male
+  issuedDate: 12-03-2020
+  issuedAuthority: Passport Authority Hyderabad
+  expiryDate: 13-03-2030

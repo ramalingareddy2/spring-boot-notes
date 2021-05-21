@@ -1,0 +1,90 @@
+Spring Boot addresses the non-functional requirements in building an Spring Framework based applications
+1. Auto Configurations
+2. Starter Dependencies
+3. Actuator Endpoints
+4. DevTools
+5. Embedded Containers
+6. Spring Boot CLI
+
+#1 Auto Configuration
+Takes care of configuring Spring Framework components automatically with their defaults for an application, so that programmer dont need to write the configuration information in tuning the Spring Framework for an application.
+
+#2 Starter Dependencies
+While creating the Spring Framework based application, developer has to configure dependencies to be used as part of the project. setting up the required set of libraries seems to be a tedious job and goes in loops in trouble shooting the dependencies and their compatible versions.
+Apart from configuring the external library classes, even we need to identify the version compatibility between the Spring Framework modules itself.
+
+In addition to the above if we want to migrate our application to the higher/latest versions of the Spring Framework, again the who process of debugging and identifying the right version of dependencies should be done.
+
+To overcome the above problems and help us in quickly setting up the Spring Framework projects with compatible dependencies including third-parties Spring boot has comeup with starter-dependencies.
+  
+For each type/technology of project Spring Boot has provided relevant starters which we can directly add as part of maven/gradle projects so that it takes care of adding all the relevant spring dependent modules and external libraries also with compatible versions.
+
+#3 Actuator Endpoints
+Using Spring Boot we can build development to product grade deployable applications.
+Actuator Endpoints provides out of box lot of Endpoints like healthcheck, metrics, memory and many which we just need to enable them to have our application being deployed on production environment without the necessacity of adding additional code to make it production deployable.
+  
+#4 DevTools [Development Feature]
+Debugging the code becomes very simple by using DevTools, when we modified the code during the development to reflect the code changes we made usually we need to redeploy and restart the application server which kills lot of development time. With the use of DevTools when and ever we modified the code the devtool takes care of reloading the specific class we changed into jvm memory without the need of restarting the application server thus saves lot of time in debugging.
+  
+#5 Embedded Container
+The server is shipped as part of the project code as library so that you run your project our the code itself we dont need to external install container, package and deploy into the server, which seems to slow down the development and qa process of the application.
+  
+#6 Spring Boot CLI
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

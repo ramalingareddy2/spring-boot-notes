@@ -1,0 +1,272 @@
+Spring Framework with Spring Boot [3 months 15 days ] [after:- 3 months] [6 months][7k]
+
+Spring Boot and Micro Services
+
+Pre-requisite:-
+Core Java
+  - Oops Principles
+  - Interfaces and Abstract classes
+  - Polymorphism
+  - Collection api
+  - Multi-Threading
+  - Synchronization
+  - Serialization
+  - I/O Streams
+  - Streaming api
+  - Exception Handling
+  - Basic Jar packaging
+
+Jee [Servlet/Jsp]
+  - Distributed Web Application basics
+  - Servlet Containers and Jee Application Servers
+  - Packaging the Web Application in Java as War
+  - Application Deployment
+  - Servlet / GenericServlet / HttpServlet
+  - ServletConfig
+  - ServletContext
+  - RequestDispatcher
+  - HttpSession
+  - Cookies / URLRewriting
+  
+  - Jsp
+    - scriplets
+    - action tags
+    - page directivites
+    - C tag library
+---------------------------------------------------------------------------------------
+Database knowledge
+- Oracle Database
+- MySql Server Database
+Sql queries
+  - ddl, dml, dql
+  - how to write join queries
+----------------------------------------------------------------------------------------
+Hibernate 4/5  
+  - SessionFactory, Session, Transaction
+  - Mappings (annotations)
+  - Get vs Load
+  - save(), saveOrUpdate(), update(), merge(), delete()
+  - Assocation Mapping models (one-to-one, one-to-many, many-to-many)
+  - hql, jpql query language
+------------------------------------------------------------------------------------------
+Spring Framework (annotation/java configuration)
+  - Core 
+    - dependency injection (setter/constructor)
+    - bean scopes
+    - bean lifecycle
+    - bean factory post processors
+    - bean post processors
+    - event handling
+    - internationalization
+    - static factory method / instance factory method instantiation
+    - aware interfaces
+  - annotations
+    - @Autowired
+    - @Qualifier
+    - @Component | @ Service | @Controller | @RestController | @Repository
+    - @Bean
+    - @PropertySource
+    - @Configuration
+    - @Value
+    - @ComponentScan
+    - @Primary    
+    
+  - aop
+    - principles
+    - advices (aspectj aop approach)
+      MethodBeforeAdvice, AroundAdvice, AfterReturningAdvice, ThrowsAdvice
+      Pointcut
+      JoinPoint
+      
+  - Spring Jdbc 
+    - JdbcTemplate (DataSource, DataSourceTransactionManager)
+  
+  - Spring Transaction    
+    - Annotation Transaction Management
+    
+  - Spring DataJpa
+    CrudRepository, JpaRepository      
+  
+  - Spring Mvc
+    -- annotation-driven developement
+    - @Controller, @RequestMapping
+    - @GetMapping, @PostMapping
+    - @EnableWebMvc
+    - WebMvcConfigurer
+    - DispatcherServlet
+    - ContextLoaderListener
+    - HandlerMappings
+    - ViewResolvers
+    - Interceptors
+    - @ModelAttribute
+    - Model
+    - @RequestParam
+    - @PathVariable
+  - Spring Security
+--------------------------------------------------------------------------------
+Micro Services [Pre-requisite]
+  - Restulful Services
+    - principles
+    - Spring Framework + Restful Services
+      
+---------------------------------------------------------------------------------
+Spring Boot
+- Introduction to Spring Boot
+- Developing our first application on Spring Boot
+- Executable Jar and directory structure of Spring Boot Executable Jar
+- Dependency Management and Inheritance of Spring-boot-starter parent in creating spring boot
+- @SpringBootApplication annotation
+- Customizing the Spring boot application using Fluent Builder Api
+- Application Events and Listeners in Spring Boot
+- Command-Line Runners & Application Runners
+- Spring Boot Exit codes
+- Application Properties
+  - Properties File
+  - Yaml 
+- Configuration Properties
+- Spring Boot Profiles
+- Spring Web Mvc Application Flow in Boot
+  - War packaging and deployment
+  - Embedded Servlet Container support
+  - Registring Filters and Servlets
+  - Customizing Embedded Servlets Containers
+- What are auto configurations
+  - Create our own auto configurations
+    - Conditional annotations
+  - Create our own starter dependencies
+- Spring Boot Actuator endpoints
+  - create our own endpoints
+- DevTools
+- Spring boot security (Web Security) (OAuth)
+
+Microservices
+--------------
+Monolithic application architecture. What are the drawbacks of building applications on Monolothic architecture?
+MicroServices application architecture, What are the benefits of using Micro Services
+Choosing Monolithic and Micro Services
+How to develop Micro Services based on applications using Spring Boot | Spring Cloud | Spring Micro Services
+  - Eureka [Discovery Registries]
+  - Ribbon
+  - Zulu
+  - Hystix (Circuit Breaker)
+  - Api Gateway
+  - Feign
+Config Server
+Config Client
+
+Few Design Patterns related to Microservices (Theoritically)
+  - Saga [Transactionality] [Messaging Kafka | RabitMQ]
+  - Api Composer
+  - CQRS
+---------------------------------------------------------------------------------------------
+Duration:= 1 month 10 days (40 days)
+Fees= 5000/-
+No Recordings | No Youtube videos | Not permitted to do (legally proceedings)  
+Daily the classroom live notes will be shared on (Weekly basis)
+Timings = 6:30 pm - 7:30 pm (15 minutes early)  (1:15 hours)
+          6:15 pm (after demo)
+Monday - Sunday [7:30 am/8:00 am] [3 hours]
+You can pay fees after 3 days
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

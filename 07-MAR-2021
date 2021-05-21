@@ -1,0 +1,286 @@
+The spring boot has provided 2 plugins for creating the spring boot gradle project.
+ 1. plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.4.3'
+  }
+  the boot plugin declared above will override the default jar task that is imported by java plugin.
+ 2. apply plugin: 'io.spring.depedency-management'
+ This will import spring boot bom in to the gradle project, so that we can get maven kind of dependency management. So for the dependencies we declared under dependencies section of spring boot starters we dont need to specify the versions.
+Now we can add starter dependencies under dependencies section.
+----------------------------------------------------------------------------------------------------------------
+How to distribute a Spring Boot application?
+We deliver Java Application by packaging it as an jar/war in java. To run a jar or war program we need to do the following
+  1. How to run a Jar library application
+    Need to set the classpath pointing to the jar and its dependent jar's and need to pass the fully qualified name of the Main class as an input to the jvm while running java application.
+  For eg.. lets have a jar below
+  
+  ubereats.jar - [dependencies: mysql-connector-java-8.0.2.jar, log4j-1.2.jar, commons-bean-utils-1.0.1.jar]
+  |-META-INF
+    |-manifest.mf
+  |-packages
+    |-com.ubereats.application.Launcher [Main]
+  How to run the above ubereats.jar application?
+  set classpath=ubereats.jar;mysql-connector-java-8.0.2.jar;log4j-1.2.jar;commons-bean-utils-1.0.1.jar
+  java com.ubereats.application.Launcher
+  
+  2. How to execute a War application
+    setup the web application server / servlet container
+    deploy the war file into deployment directory of the container
+    start the container.
+    
+#1 There are difficulties in executing a jar application
+  - To run the jar application we need libraries/dependencies to be used, but the end-user/deployer dont know what dependencies are required to run the application, if we directly deliver the project as jar file. Along with he dont know which versions of the to be used for running application.
+  - To the jar application we need to pass the fqn of the class as an input to jvm, where enduser/deployer dont have the idea about it.
+  - running bunch of commands in setting classpath of point to jars and running java application using fqnName makes the job of end-user/deployer more tedious.
+Conclusion:- by distributing java applications as jar we cannot have them running easily by the above problems.
+  
+To overcome the above problems in using a java (jar) application the sun microsystems has provided a concept called "executable jars". By this we can say we have 2 ways/types of delivering the jar file to the end-user.
+  1. distributable jar / jar library = if our java application we build acts as an dependency in someother application, then we can deliver the project as a general jar file.
+    For eg.. log4j, commons-logging, mysql-connector-java all these are java projects only, but upon delivering them will place them as libraries/dependencies in other application to build, these will not be executed directly as application.
+    
+  2. executable jar
+  If we build a java application that has to be directly used by enduser and run it, then we should package the application in a executable jar packaging.
+  [dependencies: mysql-connector-java-8.0.2.jar, log4j-1.2.jar, commons-bean-utils-1.0.1.jar]
+  
+  Developer while delivering the application he has to developer along with application jar file even dependent libraries also by placing them in a installable/copyable directory to the end-user.
+    
+  uberapplication [application delivery directory]
+  |-ubereats.jar
+    |-META-INF
+      |-manifest.mf
+        Class-Path: lib/mysql-connector-java-8.0.2.jar; lib/log4j-1.2.jar; lib/common-bean-utils-1.0.1.jar
+        Main-Class: com.ubereats.application.Launcher
+  |-lib
+    |-mysql-connector-java-8.0.2.jar
+    |-log4j-1.2.jar
+    |-commons-bean-utils-1.0.1.jar
+Now delivery the application directory to the end-user. Now the enduser has to simply goto uberappliation directory and run the application using java -jar ubereats.jar
+
+When do we call a Jar as an executable jar?
+Within the manifest.mf of a jar, if it contains executable information in running a jar program like Main-Class and Class-Path(optional) attribute then the jar is called executable. 
+Executable Jar = self-executable by itself as it contained all the details inside it.
+  
+Lets build an executabler jar.
+  ubereats
+  |-Launcher.java
+
+Launcher.java
+Logger logger = Logger.getLogger(Launcher.class);
+logger.info("running with log4j dependency");
+----------------------------------------------------------------------------------------------------------------
+When we can call a Jar as an executable jar?
+If the jar contains manifest.mf defined with Main-Class and Class-Path(optional) attributes then the jar can be called as executable jar.
+  
+There are problems in java executable jar and its packaging
+Usually a jar file is meant for delivering the java application as a single packaged distribution. but when we use executable jars we cannot package dependent jars inside the executable jar and we can deliver it as one single packaged application.
+
+uber-application
+|-ubereats.jar
+|-lib
+  |-mysql-connector-java-8.2.jar
+  |-log4j-1.2.jar
+  |-commons-bean-utils-2.3.jar
+   
+to distribute and deliver executable jars we need to create application directory in which we need to place application jar and dependent jars and should deliver together with relative paths.
+because java jar packaging model doesnt support packaging one jar inside another.  
+From the above it looks like there is no use of jar packaging model as we cannot deliver our application as a single packaged application.
+  
+To overcome the above problem few people comeup with some alternates like uber jars / fat jars. Here the application jar and all of its dependents will be extracted into a directory and all the .class files are packaged into one single jar file. So that the jar we created has all the .class files of application/its dependents as well.
+  
+Now there are dis-advantages with fat jars / uber jars.
+  1. We cannot identify the dependencies we are using and their versions of our application by look into fat jar.
+  2. upgrading one of the dependency requires rebuilding the whole application with all the dependencies again.
+  
+To overcome the above problems spring boot has comeup with Spring Boot executable jar packaging standard.
+Spring boot has comeup with special jar packaging structure by which we can package dependent jars also inside the executable jar so, that our application can be delivered to the end-user as a single packaged application. This helps us in cloud deployments and cloud ops.
+
+What is the structure of Spring Boot executable jar file?
+  
+application.jar (general structure of a regular jar)
+|-META-INF
+  |-manifest.mf
+|-packages
+  |-.class (our application class files)
+    
+application.jar
+|-META-INF
+  |-manifest.mf
+    |-Main-Class: org.springframework.boot.JarLauncher
+    |-Start-Class: com.ubereats.application.Launcher
+|-BOOT-INF
+  |-classes
+    |-[.class files of our application]
+  |-lib
+    |-[.jar dependent jars of our application here]
+|-org
+  |-springframework  [classloaders]
+    |-boot
+      |-Launcher.class
+      |-JarLauncher.class
+      |-WarLauncher.class
+        
+    
+classloaders = loads the .class files (or) bytecode of a class into jvm memory.
+
+In the above jar file we have Launcher.class as an interface with 2 implementations as JarLauncher and WarLauncher respectively. These are spring boot provided special classloader classes which are responsible for load BOOT-INF/classes and BOOT-INF/lib directory ".class" files into jvm memory. This indicates our application class files and jar files should be placed inside BOOT-INF.
+  
+When we run our application using java -jar application.jar, the jvm goes to META-INF/manifest.mf to identify the Main-Class of our application. Here we should not write our Main-Class as our application class, since it is not packaged directly inside the jar. instead we need to use Spring Boot Classloaders as Main-Class.
+So that jvm executes Spring Boot Special classloader class to run  the application.
+Now depends on the type of the application we can write Main-Class: as JarLauncher/WarLauncher if its a Jar file write it as JarLauncher so that the main method of these classes will load BOOT-INF/lib and BOOT-INF/classes directory ".class" files into jvm and will call Start-Class: which is nothing but our application main class.
+  
+In this we we can deliver our application as a single-packaged application to the end-user.
+
+Packaging the application as per the above directory structure has to be done by programmer by understand the whole directory structure. Instead of this Spring boot has provided
+spring-boot-maven-plugin and spring-boot gradle plugin (jar task)
+which will takes care of directly creating spring boot executable jar.
+
+spring-boot-maven-plugin
+1. The spring boot plugin will check in pom.xml the packaging type of your application, it is jar, then it writes in manifest.mf the Main-Class as JarLauncher
+2. it identifies the Main-Class of our application using @SpringBootApplication and writes it in manifest.mf as Start-class
+packages and delivers the jar file. The spring-boot-maven-plugin has a repackage goal (method in the plugin), this plugin method should be executed as part of package phase of maven.
+  
+The entire spring-boot-maven-plugin configuration is taken care as part of spring-boot-starter-parent pom.
+But in case if we are building our spring boot application by importing spring-boot-starter-parent as a pom dependency then we need to manually configure spring-boot-maven-plugin under plugins section of our pom.xml
+
+pom.xml - in this case plugin will not be configured for our project
+-------
+<project>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.3</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>2.4.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+  
+spring-boot gradle plugin
+--------------------------
+plugins {
+  id 'war'
+  id 'org.springframework.boot' version: '2.4.3'
+}
+
+by the above plugin, gradle will add a jar task to our project by overriding java default jar task. The spring boot jar task takes care of creating spring boot executable jar.
+
+the spring boot jar task check for which plugin we enabled for our application
+if we use id 'java'  = it places Main-Class : JarLauncher
+if we use id 'war' = it places Main-Class: WarLauncher
+
+and based on @SpringBootApplication annotation it writes the Start-Class in manifest.mf.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   

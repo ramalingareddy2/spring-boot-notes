@@ -1,0 +1,105 @@
+How to setup spring boot project using maven build tool?
+There are different ways of creating a spring boot project using maven build tool.
+  1. setup maven project by declaring parent project as spring-boot-starter-parent and add starter dependencies in the pom file
+  advantage:-
+    - the starter dependencies and plugins would be inherited from the spring-boot-starter-parent so that we need to configure starter-dependencies versions and plugin configurations for our project
+    - migrating to the higher versions of the Spring Framework becomes easy, just by changing the version of the parent.
+      
+  2. we can declare spring-boot-starter-parent as a pom import in our project when we have already another project being defined as a parent for our project.
+    
+  While working in corporate environments, in usually the corporates provides their own parent projects defined with remote repositories, common dependencies and plugin configurations. So while developing our projects we need declare parent project as corporate parent
+  In such case we cannot add spring-boot-starter-parent as a parent for our project since we have already corporate parent.
+  In this case how to create spring boot project?
+  Instead of declaring spring-boot-starter-parent as a parent project, we need import the spring-boot-starter-parent as a pom dependency so that
+  1. all the dependencies declared in the spring-boot-starter-parent will be imported into our pom under dependencyManagement section, so while declaring starter-dependencies of spring-boot we can exclude versions.
+  2. But the plugins declared in spring-boot-starter-parent will not be inherited, so we need to manually configure spring-boot-maven-plugin in our project
+  
+      
+For eg.. a parent project of a corporate looks like the below.  
+groupId=wellsforgo.com
+artifactId=wellsfargo-common-parent
+packaging=pom
+version=1.0.1
+  |-remote repository declarations
+  |-dependencies
+  |-plugins
+
+while creating our project we declare parent as coporate project, so to use spring-boot-starter-parent we need to add it as a pom import in our project shown below.
+[patient]
+
+pom.xml
+--------
+<project>
+  <parent>
+    <groupId>wellsfargo.com<groupId>
+    <artifactId>wellsfargo-common-parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath/>
+  </parent>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.3</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>      
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>      
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>      
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>2.4.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+      
+
+  
+
+      
+      
+      
+      
+      
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+

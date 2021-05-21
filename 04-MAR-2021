@@ -1,0 +1,159 @@
+How to create spring boot project?
+To work with spring boot applications it is recommended to use an build tool like a maven/gradle. Even though it is not mandatory to use a build tool for spring boot application, setting up the project becomes quick if we use a build tool
+We can use either maven or gradle a build of your choice to create an spring boot project.
+
+How to create spring boot project using maven?
+There are many ways we can create spring boot project with maven.
+1. declare spring-boot-starter-parent as a parent project for our project
+2. import spring-boot-starter-parent as an pom dependency in our project
+
+#1 declare spring-boot-starter-parent as a parent project for our project
+spring boot has provided spring-boot-starter dependencies those are empty maven projects declared with transitive dependencies of other spring modules and external libraries
+
+spring-boot-starter (empty maven project)
+  |-src
+    |-main
+  |-pom.xml
+    - dependencies
+      |-[spring module dependencies]
+      |-[external third-party libraries as dependencies]
+      
+In this way spring boot has provided several starter dependencies each for the technology we want to use for building spring framework application.
+  
+While creating our project we can quickly add spring-boot-starter-* dependencies dependents the technologies we want to use in creating the project, so that starter dependencies takes care of pulling all the spring modules and external dependencies into my project, so that we can jump start in developing the project.
+  
+For every new release of the spring framework, they will be a parallel release of spring boot also. In the spring boot release they upgrade the spring-boot-starter-* dependencies reflecting the latest versions of spring modules and external libraries.
+  
+spring-boot-starter (empty maven project) (latest)
+  |-src
+    |-main
+  |-pom.xml
+    - dependencies
+      |-[spring module dependencies] (latest spring framework module versions)
+      |-[external third-party libraries as dependencies] (compatibile external libraries versions)
+  
+So upgrading to a new spring framework version while working with spring boot means?  
+To upgrade to the spring framework version while working with spring boot we need to modify the versions of the spring-boot-starters-* we are using in our project. We should ensure while upgrading all of the starter dependencies to be used as same version of the spring boot.
+  
+Looks like upgrading the spring boot project to the latest version of spring framework is a difficult task and should be done atmost care. To overcome this project spring boot has provided one more empty maven project called spring-boot-starter-parent
+
+spring-boot-starter-parent (maven project->packaging=pom)
+  |-pom.xml
+    |-[dependencyManagement]
+        |-dependencies
+          |-dependency=spring-boot-starter-*: version=2.4.3
+    |-build
+      |-[pluginManagement]
+        |-plugins
+          |-plugin = spring-boot-maven-plugin: version=2.4.3
+            
+
+Now when we create our spring boot project we can declare spring-boot-starter-parent as a parent project for our project as shown below.
+mvn archetype:generate -DgroupId=boot -DartifactId=boot-parent-exp -Dversion=1.0.0 -DarchetypeArtifactId=maven-archetype-quickstart
+
+boot-parent-exp
+|-src
+  |-main
+    |-java
+    |-resources
+|-pom.xml
+
+pom.xml
+--------
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.5.0</version>
+  </parent>
+  <!-- all the dependencies and plugins of the parent will be inherited to the child project -->
+  
+  <groupId>boot</groupId>
+  <artifactId>boot-parent-exp</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+  </dependencies>
+</project>
+
+By declaring spring-boot-starter-parent all the dependencies declared in parent project and plugin configurations would be inherited to our child project. so in our project we dont need to declare version for boot-starter dependencies. Upgrading to the newer versions of spring framework just requires a change in spring-boot-starter-parent of our project.
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

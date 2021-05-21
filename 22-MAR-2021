@@ -1,0 +1,198 @@
+What are CommandLineRunners and ApplicationRunners, what is the purpose of them?
+If we want to perform some startup activities for an spring boot application then we can use CommandLineRunners and ApplicationRunners.
+
+While we work with Spring Web Mvc there is no way of performing the startup activities for an application after ioc container has been created after the bean definitions are being instantiated, before the application started serving the requests.
+  
+So to overcome the dis-advantage and ensure that irrespective of the type of the application we build using spring framework, spring boot has standardized the startup activities of Spring Boot application using SpringApplication class.
+  
+Now programmers can write their logic that they wanted to get executed during the startup of the application as part of class implementing from CommandLineRunner or ApplicationRunner and configure them as bean definitions.
+So that SpringApplication class takes care of calling these classes after the ioc container has been created and after refreshContext has been finished, once the CommandLineRunner and ApplicationRunner finished execution then it returns the reference the ioc container to the application.
+  
+@Component  
+class AppStartupCommandLineRunner implements CommandLineRunner {
+  public void run(String... args) {
+    // write the startup logic
+  }
+}  
+
+@Component
+class AppStartupApplicationRunner implements ApplicationRunner {
+  public void run(ApplicationArguments appArgs) {
+    // write your startup logic
+  }
+}  
+
+The command-line parameters that we pass while running the application will be passed as an input to the CommandLineRunners and ApplicationRunner classes by the SpringApplication class while calling them. These arguments can be used for customizing the startup activities.
+  
+What is the difference between CommandLineRunner and ApplicationRunner?
+In CommandLineRunner we get all the command line parameters passed as an String arguments to the run method. where as in ApplicationRunner we get the command line arguments as ApplicationArguments class object, through which we can extract OpsArguments and NonOpsArguments.
+-------------------------------------------------------------------------------------------------------------
+Spring Boot Application Exit Code
+---------------------------------
+
+How to customize the exit code of a spring boot application?
+  
+1. Write a class implementing from ExitCodeGenerator and override the getExitCode() method and return the exit code we want to return as part of our application. and configure it as a bean definition.
+
+@Component  
+class AppExitCodeGenerator implements ExitCodeGenerator {
+  public int getExitCode() {
+    return 101;
+  }
+}
+
+2. At the end of your spring boot application we need to call SpringApplication.exit() letting him gracefully terminate the Spring Boot application. The SpringApplication.exit() method performs several activities and returns an exit code by calling ExitCodeGenerator.
+  1. It collects all the ExitCodeGenerator class type bean definitions from the ioc container.
+  2. it will try to close the ioc container gracefully
+  3. in the event of closing the ioc container if there is an exception
+    it generates an random exit code indicating the error, returns to the jvm and terminates the application
+  4. if there is no exception encourted during the time of closing the ioc container, it iterates over the ExitCodeGenerators and collects the last exit code of the last generator and returns it as an exit code to our application.
+  5. before returning the exit code it publishes ExitCodeEvent letting us to handle to identify which exit code our application terminating.
+    
+class BootExitCodeApplication {
+  
+  public static void main(String[] args) {
+    ApplicationContext context = SpringApplication.run(BootExitCodeApplication.class, args);
+    
+    // perform the operation
+    System.exit(SpringApplication.exit(context));    
+  }
+}
+  
+2. How to capture the exit code with which our application is terminating?
+  we can write an ApplicationListener which listens for ExitCodeEvent which will be called by SpringApplication class when we call SpringApplication.exit(context) by passing ExitCodeEvent which contains the exit code of our application.
+    
+  @Component
+  class AppExitCodeEventListener implements ApplicationListener<ExitCodeEvent> {
+    public void onApplicationEvent(ExitCodeEvent event) {
+      event.getExitCode();
+    }
+  }  
+-------------------------------------------------------------------------------------------------------------
+@Component  
+@ConfigurationProperties
+class Machine {
+  public int fuelLevel;
+  
+  public void start() {
+    if(fuelLevel < 5) {
+      throw new InSufficientFuelException("fuel not sufficient");
+    }
+  }
+  //accessors  
+}  
+
+class ExitCodeApplication {
+  public static void main(String[] args) {
+    ApplicationContext context = SpringApplication.run(ExitCodeApplication.class, args);
+    
+    try {
+      Machine machine = context.getBean(Machine.class);
+      Machine.start();  
+      System.exit(SpringApplication.exit(context));
+      
+    }catch(InSufficientFuelException e) {
+      System.exit(10);
+    }
+    
+    
+    
+  }
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

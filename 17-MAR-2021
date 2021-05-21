@@ -1,0 +1,168 @@
+package com.customconfig.beans;
+@Component
+public class Passport {
+  @Value("${passport.passportNo}")
+  private int passportNo;
+  @Value("${passport.passportHolderName}")
+  private String passportHolderName;
+  @Value("${passport.dob}")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date dob;
+  @Value("${passport.gender}")
+  private String gender;
+  @Value("${passport.issuedDate}")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date issuedDate;
+  @Value("${passport.issuedAuthority}")
+  private String issuedAuthority;
+  @Value("${passport.expiryDate}")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
+  private Date expiryDate;
+}
+
+attributes.yml
+-------------------------------------------
+passport:
+  passportNo: 290322
+  passportHolderName: Rock
+  dob: 23-02-1999
+  gender: Male
+  issuedDate: 12-03-2020
+  issuedAuthority: Passport Authority Hyderabad
+  expiryDate: 13-03-2030
+
+@SpringBootApplication
+//@PropertySource("classpath:attributes.yml")
+class CustomYmlApplication {
+  public static void main(String[] args) {
+    //ApplicationContext context = SpringApplication.run(CustomYmlApplication.class);
+    SpringApplication springApplication = new SpringApplicationBuilder(CustomYmlApplication.class).initializers(new YmlConfigApplicationContextInitializer()).build();
+    ApplicationContext context = springApplication.run(args);
+    
+    Passport passport = context.getBean(Passport.class);
+    sop(passport);
+  }
+}
+
+There are 2 ways of loading the custom yml file into the environment object of ioc container
+1. YamlPropertySourceLoader
+2. YamlFactoryBean
+
+
+1. YamlPropertySourceLoader = it loads yml file and converts into PropertySource and returns to us. Then we can load these PropertySource into Environment object of ioc container.
+  
+we need to load these PropertySources into Environment object after ioc container has been created before the bean definition objects are instantiated.
+  1. ApplicationPreparedEvent
+  2. ApplicationContextInitializer
+We can use either spring boot even ApplicationPreparedEvent | ApplicationContextInitializer to grab ioc container and load PropertySource into it before it begins instantiating the bean definitions.
+  
+class YmlConfigApplicationContextInitializer implements ApplicationContextInitializer {
+  public void initialize(ConfigurableApplicationContext context) {
+    YamlPropertySourceLoader yamlPropertySourceLoader = null;
+    List<PropertySource> propertySources = null;
+    
+    yamlPropertySourceLoader = new YamlPropertySourceLoader();
+    propertySources = yamlPropertySourceLoader.load(context.getResource("classpath:attributes.yml"));
+    
+    
+    ConfigurableEnvironment env = context.getEnvironment();
+    for(PropertySource propertySource : propertySources) {
+      env.getPropertySources().addLast(propertySource);
+    }    
+  }
+}  
+  
+#2. YamlFactoryBean approach
+
+YamlFactoryBean = Factory Bean class which helps us in creating the object of another class. here YamlFactoryBean helps us in read Yaml file and creates Properties collection object with the data of the Yaml file.
+  
+@PropertySource = takes care of loading Properties into environment object. it usual takes file path as an input and reads the properties file directly.
+Now we have Yaml which we can convert into Properties collection using YamlFactoryBean, so that if we can pass these properties collection to @PropertySource anotation he can takes care of loading into Environment object.
+  
+Now we need to tell @PropertySource annotation rather than directly reading Properties file, execute my code which gives you Properties collection that you can load in ioc container quickly.
+  
+PropertySourceFactory has been introduced.
+class YamlPropertySourceFactory implements PropertySourceFactory {
+  public PropertySource createPropertySource(String name, EncodedResource resource) {
+    YamlPropertiesFactoryBean yamlPropertiesFactoryBean = null;
+    
+    yamlPropertiesFactoryBean.setResources(resource.getResource());
+    Properties properties = yamlPropertiesFactoryBean.getObject();
+    
+    PropertiesPropertySource propertySource = new PropertiesPropertySource(properties);
+    return propertySource;    
+  }
+}
+  
+@SpringBootApplication
+@PropertySource(value="classpath:attributes.yml", factory = YamlPropertySourceFactory.class)
+class SpringApplication {
+  public static void main(String[] args) {
+    
+  }
+}  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+How to setup spring boot project using gradle?
+A plugin in gradle imports conventions and tasks to a project. So Spring Boot has provided org.springframework.boot plugin which we enable a jar task by overriding the default jar task enabled by java plugin.
+
+to have maven kind of dependency management we need to apply one more plugin called "io.spring.dependency-management", this will import boot bom (bill of materials), which contains all spring-boot-starter dependencies imported into our gradle project, so that while declaring spring-boot-starter-* we dont need to specify versions numbers to be used.
+  
+bill of materials = includes all of the dependencies are packaged and imported
+
+build.gradle
+--------------
+plugins {
+  id 'java'
+  id 'org.springframework.boot' version '2.4.3'
+}
+apply plugin: 'io.spring.depedency-management' // this will import spring boot bom into our project
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_9
+  targetCompatibility = JavaVersion.VERSION_1_9
+}
+  
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter'
+  implementation 'org.springframework.boot:spring-boot-jdbc'
+}
+
+org.springframework.boot = plugin enables the spring boot project to be packaged spring boot executable jar by adding relevant taskst to our project.
+----------------------------------------------------------------------------------------------------------------  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

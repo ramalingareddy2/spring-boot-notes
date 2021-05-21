@@ -1,0 +1,75 @@
+How to customize the spring boot application?
+There are several activities being perform by SpringApplication class during the startup of Spring Boot Application, if we are not happy with the defaults, we can change those activities by customizing the spring boot application.
+There are 2 ways are there
+1. External configuration approach
+2. Fluent builder api
+
+1. External configuration approach
+There are few customizations we can make through configuration approach.
+  1.1 Changing the spring boot banner
+  we can create banner.txt file underthe classpath so that SpringApplication will turnoff the default banner and shows the contents of banner.txt
+  we can create banner.jpg, banner.png, banner.gif under classpath and displays banner with images
+  we can turn off the banner by configuring a property in application.properties spring.main.banner-mode=off|console|log
+  we can change the location of the banner by using the property spring.banner.location=file:|classpath: location
+  1.2 spring.main.lazyInitialization = true
+    will delays the instantiation of the bean definitions in the ioc container. it helps in saving the memory occupied by our application.
+
+2. Fluent Builder api
+
+When do we need to use a Factory | Builder class in instantiating the object of another class?
+1. Instantiating the object of a class is very complex, then rather than writing the code in instantiating the object of another class in all our classes, we can use a factory or builder.
+2. If we want to hide the implementation classname of another class in creating the object of another class, then also use factory or builder.
+
+1. Instantiating the object of a class is very complex, then rather than writing the code in instantiating the object of another class in all our classes, we can use a factory or builder.
+class A {
+  A(B b){}
+} 
+class B {
+  B(C c){}
+}
+class C{}
+  
+  
+2. If we want to hide the implementation classname of another class in creating the object of another class, then also use factory or builder.
+interface IA {}
+class A1 implements IA {}
+class A2 implements IA {}
+
+class AFactory {
+  public IA createA() {
+    return new A2();
+  }
+}
+
+class X {
+  void m1() {
+    IA a = AFactory.createA();
+  }
+}
+
+class Y {
+  void m1() {
+    IA a = AFactory.createA();
+  }
+}
+
+
+class Z {
+  void m1() {
+    IA a = AFactory.createA();
+  }
+}
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+

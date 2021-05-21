@@ -1,0 +1,312 @@
+What is nested ioc containers what is the purpose of them?
+class A {       class B {}
+  B b;
+  
+  // setter
+}
+
+application-context1.xml
+------------------------
+<bean id="a" class="A">
+  <property name="b" ref="b"/>
+</bean>
+
+application-context2.xml
+------------------------
+<bean id="b" class="B"/>
+
+Test.java
+-----------
+ApplicationContext parent = new ClassPathXmlApplicationContext("application-context2.xml");
+ApplicationContext child = new ClassPathXmlApplicationContext("application-context1.xml", parent);
+
+Using nested ioc containers we can manage the bean definitions across the ioc container.
+What is the use of nested ioc containers?
+There are multiple uses of nested ioc containers.
+  1. we can reuse bean definition objects of an ioc container in multiple other ioc containers by sharing the same reference of their objects.
+  2. we want few bean definitions to decoupled and exists independent of our application, for example in spring mvc we want business/persistence tier components to be independent of presentation-tier components so that eve we switch technology of presentation-tier business component exists. then go for nested ioc containers.
+    
+----------------------------------------------------------------------------------------------------------------
+package com.nestedioc.beans;
+// no source code
+class Ledger {
+  public void entries() {
+    System.out.println("entries for FY2020-21");
+  }
+}    
+
+package com.nestedioc.beans;
+@Component
+class BalanceSheet {
+  @Autowired
+  private Ledger ledger;
+  
+  public void prepareBalanceSheet() {
+    System.out.println("pulling entries from ledger");
+    ledger.entries();
+    System.out.println("preparing balance sheet...");
+  }
+}
+
+// create one ioc container as parent
+@Configuration
+class ServiceConfig {
+  @Bean
+  public Ledger ledger() {
+    return new Ledger();
+  }  
+}
+
+package com.nestedioc;
+
+@SpringBootApplication
+class NestedIocApplication { // create another ioc container as child
+  public static void main(String[] args) {
+    //ApplicationContext context = SpringApplication.run(NestedIocApplication.class, args);
+    SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder();
+    springApplicationBuilder.parent(ServiceConfig.class).sources(NestedIocApplication.class);
+    SpringApplication springApplication = springApplicationBuilder.build();
+    ApplicationContext context = springApplication.run(args);
+    
+    
+    
+  }
+}
+
+Here both Ledger and BalanceSheet are part of one ioc container only because SpringApplication.run(..) by default creates only one ioc container. So if want these 2 bean definitions to be part of different ioc containers and still manage dependencies using nested ioc containers we need to customize the spring boot application.
+----------------------------------------------------------------------------------------------------------------
+What are ConfigurationProperties in Spring Boot?
+  
+@Component
+@ConfigurationProperties(prefix="jdbc")
+class JdbcDataSource {  
+  private String streetAddress;  
+  private String city;  
+  private String state;  
+  private int zip;  
+  private String country;  
+  // accessors
+}
+
+
+@Component
+@ConfigurationProperties(prefix="mongo")
+class MongoDataSource {  
+  private String streetAddress;  
+  private String city;  
+  private String state;  
+  private int zip;  
+  private String country;  
+  // accessors
+}
+
+BeanPostProcessor = after the bean definition object has been created by ioc container, before it returns the object to the application, we can apply post processing on the bean definition object using bean post processor
+
+class ConfigurationPropertiesBeanPostProcessor implements BeanPostProcessor {
+  public Object postProcessBeforeInitialization(Object obj, String beanName) {}
+  public Object postProcessAfterInitialization(Object obj, String beanName) {}
+}
+
+ConfigurationPropertiesBeanPostProcessor = This will be called by ioc container once for each bean definition object that is created by ioc container.
+  
+Then ConfigurationPropertiesBeanPostProcessor checks on the object that is passed to it, whether it has been annotated with @ConfigurationProperties annotation or not. if not annotated it will not apply any post processing.
+If the given class is annotated with @ConfigurationProperties, then goes to each attribute of primitive type and picks the name of the attribute searches in the environment object of ioc container to identify a value matching with key as attribute name, if found injects the value to the attribute.
+  
+
+
+application.properties
+----------------------
+jdbc.streetAddress=Church Street, 2nd lane
+jdbc.city=hyderabad
+jdbc.state=Telangana
+jdbc.zip=9039
+jdbc.country=India
+
+mongo.streetAddress=Church Street, 2nd lane
+mongo.city=hyderabad
+mongo.state=Telangana
+mongo.zip=9039
+mongo.country=India
+
+//@EnableConfigurationProperties
+Test.java
+ApplicationContext context = SpringApplication.run(Test.class, args);
+
+
+pom.xml
+<dependencies>
+  <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>configuration-properties-postprocessor</artifactId>
+  </dependency>
+</dependencies>
+
+----------------------------------------------------------------------------------------------------------------
+Spring Boot Application Events and Listeners
+-------------------------------------------
+
+What is event-driven programming?
+Using even-driven programming we can build applications with any of the below nature.
+  - loosely coupled component based application
+  - asynchronous-based components
+  
+No 2 classes will directly communicate with each other either through concrete references or through interface driven programming as well. So each of the classes dont get to see others in such a way we are completely loosely coupled.
+  
+One class will talks to another class by publish events and subscribing for the events. A class wants to communicate with another class will publish an event lets say event1, the other class who is interested in processing event1 will subscribe for the event from a listener. so that it receive all the events of type event1 and can perform processing.
+  
+Here there are 4 actors are there
+1. source = person who is publishing the event
+2. event = object carries data that should be passed to another class  
+3. event handler = this person is interested at processing an event will recieve the event to handle
+4. event listener = will receives an event of type and identifies the handlers and delegate the event to the handlers.
+  
+How to work with event-driven programming in spring framework?
+-------------------------------------------------------------------
+class ApplicationEvent {
+  Object source;
+  ApplicationEvent(Object source) {}
+}  
+
+class TransactionNotificationEvent extends ApplicationEvent {
+  private String mobileNo;
+  private String accountNo;
+  private String operationType;
+  private double operatingAmount;
+  private double balance;
+  private String atmMachineNo;
+  
+  public BalanceNotificationEvent(Object source) {
+    super(source);
+  }
+  // accessors
+}  
+
+
+// ioc container - listener
+// handler
+/*
+class NotificationEventListener implements ApplicationListener<TransactionNotificationEvent> {
+  public void onApplicationEvent(NotificationEvent event) {
+    //read the data from event
+    //and send sms to the customer
+  }
+}
+*/
+class WhatsAppNotificationEventListener implements ApplicationListener<TransactionNotificationEvent> {
+  public void onApplicationEvent(NotificationEvent event) {
+    //read the data from event
+    //and send whatsapp message to the customer
+  }
+}
+
+// publish event to ioc container
+class AtmMachine implements ApplicationEventPublisherAware {
+  private ApplicationEventPublisher applicationEventPublisher;
+  
+  public String withdrawl(String accountNo, double amount) {
+    // goes to database, verify balance of the account
+    // deducts the amount from the account and updates the database
+    TransactionNotificationEvent event = new TransactionNotificationEvent(this);
+    event.setMobileNo(8393);
+    // all the data populate into event
+    applicationEventPublisher.publish(event);
+    
+  }
+  void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    this.applicationEventPublisher = applicationEventPublisher;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    

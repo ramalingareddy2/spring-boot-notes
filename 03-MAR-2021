@@ -1,0 +1,63 @@
+Those are maven empty projects (or) artifacts declared with transitive dependencies of spring framework modules and external third-party libraries, based on the technology we use as part of starter.
+
+Why is it recommended to create a spring boot project by declaring parent as spring-boot-starter-parent, what is the reason behind it?
+To understand why we should declare spring-boot-starter-parent as parent for our project we need know the maven multi-module project.
+
+For e.g.. we are developing an enterprise application that comprises of 2 sub-projects in it. For each of these sub-projects we need create 2 maven projects declared with dependencies and plugin configurations. In addition if we have inter-dependency between the sub-projects then order of building the projects should be taken care manually. Now across the projects the dependencies configuration and plugin configurations will gets duplicated. So to overcome this problem in managing multiple projects in maven, maven has introduced mult-module maven project.
+
+parent-project
+|-pom.xml
+- in the parent pom.xml we need to do the following.
+1. packaging = pom
+2. declare all of the dependencies we want to use across the child projects as dependencies in parent under dependencyManagement section of pom with relevant versions
+3. same way plugins under pluginManagement with approviate plugin configuration
+4. decare modules according to the build order
+
+- create child projects inside the parent project.
+child-project1
+|-pom.xml
+  1. inside the child project declare the parent project with gav coordinates as parent
+  2. which ever the dependencies out of the one we defined in parent we want to use in child declare them under dependencies section, but here we dont need to specify the version.
+  2. By default all the plugin configurations we declare in parent would be inherited to the child. we dont need to reconfigure it.
+
+advantage:-
+1. build management is easy if we build parent all of the child projects declared in the order will be build automatically
+2. as the dependencies are declared in parent with versions, if we want upgrade the dependencies version for all the projects just simply modify the parent.
+3. plugin configurations can be easily can be mantained and modified.
+
+
+hms
+|-patient
+|-billing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.

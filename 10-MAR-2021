@@ -1,0 +1,101 @@
+What will happens when we call SpringApplication.run(JavaConfig.class, args);?
+There are several startup activities that are going to be performed by SpringApplication.run(..); before creating the ioc container and returning to us.
+1. It creates an empty Environment object  
+2. detects the external configuration of our application and loads that into the Environment object
+3. print the banner
+4. Checks to see the WebApplicationType
+  4.1 if spring webmvc jars are available under the classpath it treats the WebApplicationType WEB and
+    creates AnnotationConfigServletWebServerApplicationContext
+  4.2 if not looks for webflux jars available under the classpath, if found treats WebApplicationType REACTIVE
+    creates AnnotationConfigReactiveWebServerApplicationContext
+  4.3 if none of the above found the WebApplicationType NONE
+    creates AnnotationConfigApplicationContext
+5. Instantiates the SpringFactories and registers them with ioc container
+6. Executes the ApplicationContextInitializer
+7. prepareContext
+8. refreshContext
+9. invokes CommandLineRunners and ApplicationRunners if at all available in ioc container
+10. During above stages in starting up the application SpringApplication.run() method will publish events and invokes the listeners
+----------------------------------------------------------------------------------------------------------------
+How does SpringApplication.run(..) method detects and loads the external configuration?
+Spring Boot has provided several ways of passing the external configuration values with which we can configure our application components or framework components, so that we can easily switch from one env to another with minimal efforts rather than hardcoding the values and running into maintainance issues.
+These are possible places the Spring Boot detects the configuration and loads into the application (Environment) object.
+  1. if we are using dev-tools module as part of our application, then it looks for a file under user home directory with then name spring-boot-devtools.properties
+  2. we can set an environment variable called SPRING_APPLICATION_JSON containing value as json text of keys and values that will be parsed and loaded into Environment object of our application  
+  set SPRING_APPLICATION_JSON={"fuelType":"petrol","capacity":20}  
+  3. The init parameters that we configure at ServletConfig/ServletContext will be read and loaded into Environment object (only applicable for web applications)
+  
+  <context-param>
+    <param-name/>
+    <param-value/>
+  </context-param>
+  
+  <servlet>
+    <servlet-name/>    
+    <servlet-class/>
+    <init-param>
+      <param-name/>
+      <param-value/>
+    </init-param>
+  </servlet>
+  4.All the environment variables will be loaded
+  5. System Properties
+  6. RandomValuePropertySource that we configured as part of properties file using ${random.int}
+  application.properties
+  capacity=${random.int}
+  7. application.properties | application.yaml under below locations
+    7.1 under the project directory
+    7.2 under the project/config directory
+    7.3 directly from the classpath of our application (resources)
+    7.4 directly under the classpath within sub-directory config (resources/config)
+    
+From the above sources SpringApplication.run() method detects and loads the configuration, using which we can configure our application components.    
+    
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

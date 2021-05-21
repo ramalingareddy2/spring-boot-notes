@@ -1,0 +1,135 @@
+What is Spring Boot what does Spring Boot provides as part of Spring Framework?
+Spring Framework provides lot of functionality out of box, we can avoid writing boiler-plate logic and can quickly develop applications by using Spring Framework. In order for Spring Framework to provide the boiler-plate logic we need to describe the information about our application and the components to the Spring Framework.
+Its not just our application components, even the Spring Framework provided class also has to be configured as beans to the Spring Framework.
+
+#1 One way we can write the configuration information about our class to the Spring Framework is using Xml-based configuration, Spring Bean Configuration File. Ofcourse Spring does lot of this for us but nothing comes with less cost. We need to pour lot of information about our application and theirs components to make Spring understand and provide the functionality.
+
+Looks like at one point of time we are spending too much amount of time in describing the information about our application which makes heavy in using spring framework and people find it complex to work with Spring Framework.
+
+#2 This has been noticed by Spring Framework developers and brought alternate means of writing configuration information of the application using annoations. writing an Xml-based configuration is too heavy, error-prone and takes lot of time and complexity in writing the configuration, So spring has brought alternate to XML-based configuration using annotations.
+
+Thats' where Spring has introduced Stereotype annotations to help us in quickly configuring our application classes to the Spring Framework 
+@Component, @Repository, @Service, @Controller, @RestController, @Autowired, @Qualifier ... etc
+We can directly annotate our application classes with these annotations to avoid writing xml-based configuration.
+
+But there are other classes that are provided by Spring Framework itself or third-party libraries which we want to use as part of our application. For these classes we dont have the source code, now in this case we cannot write stereotype annotations directly on the class.
+Now the only way to develop application is for our classes (having source code) write Stereotype annotations and the framework/third-party libraries (doesnt have source code) write spring bean configuration only.
+Spring Bean Configuration + Stereotype annotations
+
+Looks like we are not still out of the problem that we were initially. To mitigate this problem spring has introduced Java Configuration approach.
+
+#3 Spring has introduced Java Configuration approach where for the classes which doesnt have source code rather than configuring them in Spring Bean Configuration file lets us write the configuration of those classes in another Java Configuration class.
+advantages:-
+  1. no need to memorize xml tags in writing the configuration
+  2. type save configuration
+
+Looks like even the java configuration approach has not addressed the problem. because more than an xml we need to write lot of lines of code in configuration the Framework components. 
+The java configuration approach is also doesnt looks to be a promising alternate for xml-based configuration. developers are fedup with writing too many lines of code 
+
+#4 Configurer classes are introduced
+For e.g.. lets consider while working with Spring mvc we need to configure mvc module framework classes as bean definitions like HandlerMappings, ViewResolvers, Interceptors, Formatters, MessageConverters etc. As there are predefined and fixed set of these mvc components, rather than we configuring them as bean definitions in java configuration classes. Spring Framework itself has provided builder class in creating/configuring these framework components.
+
+These configurer classes has convinient methods which we can call by passing the values with which we want spring framework components to be configured as bean definitions.
+
+
+class WebConfig implements WebMvcConfigurer {
+  public void configureViewResolvers(ViewResolverRegistry registry) {
+    registry.jsp().prefix("/WEB-INF/jsp/").suffix(".jsp");
+  }
+}
+Many of the classes of Spring Framework are not being directly used as part of our application classes, for example ViewResolver is a component that is required by DispatcherServlet to resolve a logical view name to a View Component. we never need to use this class as part of our logic, but still need to have this in our application to make Spring Framework work.
+If we are directly configuring those classes as beans using XML-Based approach or Java configuration approach we need to bare the complexity of knowing these classes their names and configuration parameters makes the programmer more complex in working with Spring.
+
+To eliminate the above problems Configurer classes help us in configuring spring components without knowing their class names and the attributes.
+
+Even though Spring Framework has provided Configurer classes to make the problem life easy to configure Framework components, still we need to write lot of code and looks like for most of the applications the way we write configurer classes in configuring framework components is same, this indicates we run into boiler-plate configuration.
+  
+By considering all of these above, Spring Framework is becoming configuration heafty we need to do lot more things to the Spring Framework to make it work for our application.To rescue us from these problems Spring has introduced a module called "Spring Boot"
+In-short :- It helps us in bringing Spring Framework quickly for our application.
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

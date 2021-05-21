@@ -1,0 +1,348 @@
+@Component
+@ConfigurationProperties(prefix = "parcel")
+public class Parcel {
+  private int parcelNo;
+  private String sourceAddress;
+  private String destinationAddress;
+  @Autowired
+  private Agent agent;
+  // accessors
+}
+// no source code
+public class Agent {
+  private int agentNo;
+  private String agentName;
+  private String mobileNo;
+  private String emailAddress;  
+  //accessors
+}
+
+application.yml
+---
+spring:
+  profiles:
+    active:
+      - dev
+...
+---        
+spring:
+  profiles: dev
+parcel:
+  parcelNo: 293
+  sourceAddress: 9393, idk
+  destinationAddress: 903, kdld
+agent:
+  agentNo: 090333
+  agentName: kmdike
+  mobileNo: 93839333
+  emailAddress: 93kdkud@gmail.com      
+...  
+---        
+spring:
+  profiles: test
+parcel:
+  parcelNo: 293
+  sourceAddress: 9393, idk
+  destinationAddress: 903, kdld
+agent:
+  agentNo: 090333
+  agentName: kmdike
+  mobileNo: 93839333
+  emailAddress: 93kdkud@gmail.com      
+...      
+    
+
+@SpringBootApplication
+class BootProfileApplication {
+  @Autowired
+  private Environment env;
+  
+  @Bean
+  public Agent agent() {
+    Agent agent = new Agent();
+    agent.setAgentNo(Integer.parseInt(env.getProperty("agentNo")));
+    agent.setAgentName(env.getProperty("agentName"));
+    agent.setMobileNo(env.getProperty("mobileNo"));
+    agent.setEmailAddress(env.getProperty("emailAddress"));
+    
+    return agent;
+  }
+  
+  public static void main(String[] args) {
+    ApplicationContext context = SpringApplication.run(BootProfileApplication.class, args);
+    Parcel parcel = context.getBean(Parcel.class);
+    sop(parcel);
+  }
+  
+}
+
+-------------------------------------------------------------------------------------------------------------
+Spring Boot Exit Codes
+Every program upon completing the execution, it returns an exit code indicating the status of its completion to the underlying operating system. 
+  a zero = indicates successful completion of execution
+  a non-zero = indicates the failure of execution and termination
+  
+Even a java application also has to return an exit code upon completion of the execution to the underlying operating system. By default if your java application has finished execution and terminiated then it returns an exit code of zero to the operating system. In case if it has ran into exeception and terminiated abnormally, then jvm generates an random exit code with which it termiantes the application by returning the exit code to the operating system.
+  
+In case if we want to return an exit code from our application to the operating system explicity then we can use System.exit(int);
+System.exit(0);
+-------------------------------------------------------------------------------------------------------------
+How to return an exit code indicating the status of execution in spring boot application?  
+
+By default event a spring boot application upon completion of execution returns an zero exit-code indicating the successful termination of the application.
+SpringApplication even takes care of registering shutdownHook() on top of the ioc container to ensure the bean lifecycle management methods are executed during termination and graceful termination of the ioc container takes place.
+  
+From the above we can understand the echo system in closing/terminating an spring boot application is already in place.
+  
+As we said earlier by default spring boot takes care of returning the exit code zero indicating success, many of the times this default behaviour is sufficient, but sometimes when we package and run our application in a containerized environments like docker etc, we might have to return a different exit codes than the default to indicate the status termination to the underlying containerization engine, so in such case how to customize the exit code of our spring boot application.
+  
+1. How to customize the successful completion of the application exit code.
+
+@SpringBootApplication  
+class BootExitCodeApplication {
+  public static void main(String[] args) {
+    ApplicationContext context = SpringApplication.run(BootExitCodeApplication.class, args);
+    // writing logic to execute or call a bean definition
+    
+    System.exit(SpringApplication.exit(context));
+  }
+}
+
+SpringApplication.exit(context) = is a method used for gracefully terminating/closing the ioc container.
+- exit() method gets all the ExitCodeGenerator bean definitions from ioc container and make it as a collection.
+- then it tries to closes the ioc container
+  - if there is any exception, then generates an random exit code indicating the failure and returns
+  - if there is no exception,
+    then call all the exit code generators take the exit code from them and return 
+
+- finally before returning publishes an event application termination event indicating the application is terminating and returns an default exit code as zero.
+  
+@Component  
+class AppExitCodeGenerator implements ExitCodeGenerator {
+  public int generateExitCode() {
+    return 393;
+  }
+}  
+  
+class SpringApplication {
+  public static int exit(ApplicationContext context){
+    int exitCode = 0;
+    try {
+      List<ExitCodeGenerator> exitCodeGenerators = context.getBean(ExitCodeGenerator.class);   
+      context.close();
+    }catch(Throwable t) {
+      // log exeception
+      // generate non-zero error code
+    }finally {
+     if(ex == false) {
+      // invoke exit code generators collect the exit code       
+     }
+     publish exit event with exit code             
+    }
+    
+    return exitCode;    
+  }
+}  
+
+2. How to know the exitcode with which our application is terminating?
+Write a Listener class for listening the ExitCodeEvent so that spring application class upon closing the ioc container and after executing the ExitCodeGenerator it will publishes the event ExitCodeEvent and invokes the ExitCodeEvent listeners passing the exit code.
+
+@SpringBootApplication
+class SpringBootExitCodeApplication {
+  @Bean  
+  public ApplicationListener exitCodeListener() {
+    return (event) -> {
+      sop(event.getExitCode());
+    };
+  }
+}  
+-------------------------------------------------------------------------------------------------------------
+What are Command-line Runners and ApplicationRunners, what is the use of them?
+
+goal:- We want to perform startup activities for our application after creation of the ioc container, before we begin executing our application.
+  
+For eg.. 
+#1 we might want to load the data from source system and initialize a cache, which is configured as a bean definition in the ioc container. loading the data into the Cache is something that we perform only one time before begining the execution of the application this can be considered as a startup activity.
+  
+#2 we want to create database schema by running sql script before our application begins execution but after the ioc container has been created. (generally we dont this activity during junit test executions)
+  
+In a spring core application we can handle the startup activities after we create the ioc container before we begin using the ioc container, because we are only creating the ioc container in core applications.
+  
+Test.java
+ApplicationContext context = new AnnotationConfigApplicationContext(JavaConfig.class);
+
+// here perform startup activities
+
+Tank tank = context.getBean(Tank.class); // use ioc container
+tank.level();
+  
+whereas in a spring mvc application, dispatcher servlet and context load listener creates the ioc container for our application. We never get a chance to perform any post construction activity in a spring mvc application since we are not creating ioc container and we dont hold the reference of it.
+So we cannot perform startup activities for our application in case of spring mvc.  
+  
+To overcome this problem, spring boot has provided an unified way of starting up the spring applications using SpringApplication.run() always whether it is core or web application. The entire startup activities of your application is standarized by using the help of SpringApplication class.
+  
+To perform startup activities for our application in Spring Boot, SpringApplication has provied a callback hook which are CommandLineRunners and ApplicationRunners
+Whatever the startup activity we want to perform write that code inside an class implementing from CommandLineRunner or ApplicationRunner class by overriding the method.
+  
+@Component  
+class AppCacheInitializerCommandLineRunner implements CommandLineRunner {
+  public void run(String[] args) {
+  }
+  
+}
+
+@SpringBootApplication
+class SpringBootApplication {
+  public static void main(String[] args) {
+    ApplicationContext context = SpringApplication.run(SpringBootApplication.class, args);
+    // before we get ioc here
+  }
+}
+
+1. create empty env
+2. detect and load external configuration
+3. print banner
+4. identify and instantiate the application context
+5. instantiate and register spring factories
+6. applicationContextInitailzier
+7. prepare context
+8. referesh context
+9. goto ioc container check for bean definitions which are implementing from CommandLineRunner or ApplicationRunner and call the run() method on them
+10. publish event
+and return ioc container to the application
+
+conclusion:-
+CommandLineRunner and ApplicationRunner are the classes programmers use in performing startup activities for a spring boot application, so that SpringApplication class takes care of calling them during the time of starting up the spring boot application after refreshContext before it returns the ioc container to the application.
+  
+I want to print the names of the bean definitions within the ioc container during the startup of the application, can you tell me how?
+  
+What is the difference between CommandLineRunners and ApplicationRunners?
+In case of CommandLineRunners to the run method we get our application arugments as String[] args; In case of ApplicationRunner we can access the application arugments into a class object ApplicationArguments
+  so that we can access the arguments 
+
+class MyApplicationRunner implements ApplicationRunner {
+  public void run(ApplicationArguments arguments) {
+    // i can access NonOpArgs()
+    // OpArgs()
+  }
+}
+
+
+java -Dspring.profiles.active=dev -jar bootapplication.jar
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+

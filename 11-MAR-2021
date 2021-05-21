@@ -1,0 +1,78 @@
+ApplicationContext context = SpringApplication.run(Config.class, args);
+1. creates an empty environment object
+2. detects and loads the external configuration into our application environment object
+3. prints the spring boot banner
+4. detects the WebApplicationType
+  4.1 if webmvc jar are found under the classpath of the project then WebApplicationType = WEB
+    creates AnnotationConfigServletWebServerApplicationContext
+  4.2 if webflux jars are found then treats WebApplicationType = REACTIVE
+    creates AnnotationConfigReactiveWebServerApplicationContext
+  4.3 if none above treats WebApplicationType = NONE
+    AnnotationConfigApplicationContext    
+5. Instantiates SpringFactories and registers with ioc container
+6. Calls ApplicationContextInitializers
+7. prepareContext
+8. refreshContext
+9. invokes CommandLineRunners and ApplicationRunners that are registered as beans in ioc container
+10. During the above stages of starting the application, it publishes different types of events and invokes the listeners.
+
+How to customize the startup activities of an Spring Boot Application?
+Spring Boot during the startup of the application it does various different activities, like detect and loading the external configuration, print banner, instantiates the ioc container and various other activities. We want to customize the process of starting up the spring boot application like
+- we want to load an external configuration into environment object other than the defaults spring boot detects
+- we want to change the banner that it prints
+- instead of one ioc container we want to have nested ioc containers
+We can customize all such things that happens during the startup of the Spring Boot application which called customizing the spring boot application.
+
+There are 2 approaches in which we can customize the spring boot application
+1. Through configuration approach we can customize the spring boot application
+2. Programmatically we can customize the startup activities of the application
+
+Few customizations we can achieve through configuration, but few other customizations has to be taken through programmatic approach only.
+
+Customization through configuration approach
+--------------------------------------------
+One of the customization we can achieve through configuration approach is changing the spring boot banner
+1. SpringApplication.run(..) looks for a file with name banner.txt under the classpath, if found it generates the banner with the contents inside the file without generating the default banner
+
+2. Instead of writing banner.txt we can write banner.image and the image also will be detected and printed
+  (if both are present it prints both)
+    
+3. we can write a property in application.properties|yaml spring.main.banner-mode: off|on|console to disable the banner being generated
+
+4. spring.banner.location
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

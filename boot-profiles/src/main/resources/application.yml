@@ -1,0 +1,27 @@
+---
+spring:  profiles:    active:    - test
+...
+---    
+spring:  profiles: dev    agent:
+  agentNo: 203
+  agentName: Rick
+  mobileNo: 309309
+  emailAddress: rick@gmail.com
+parcel:
+  parcelNo: 9888
+  sourceAddress: 15th Street, near busstation
+  destinationAddress: 120th Street, vijayanagar colony
+...
+---
+spring:
+  profiles: test
+agent:
+  agentNo: 103
+  agentName: Mile
+  mobileNo: 9239398982
+  emailAddress: mile@gmail.com
+parcel:
+  parcelNo: 30302
+  sourceAddress: 5th Street, near metro
+  destinationAddress: 10th Street, vijayanagar colony    
+   

@@ -1,0 +1,5 @@
+account:
+  accountNo: 10
+  accountHolderName: maverick yml config
+  accountType: savings
+  balance: 3293

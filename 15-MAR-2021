@@ -1,0 +1,87 @@
+What is event-driven programming?
+We can achieve 2 aspects in event-driven programming
+1. we can develop loosely coupled component-driven applications
+2. we can build asynchronous communication model between the components
+There are 4 actors 
+  1. source = source publishes an even asking someone to perform the operation for the event.
+  2. event = object encapsulated with data and the information about the source
+  3. listener = listenes for event and based on the event type identified the handler and invokes the handler to process the event
+  4. handler = performs the operation up on receiving the event.
+
+How to work with event-programming in spring framework?
+class AnEvent extends ApplicationEvent {
+  // data we want to pass to the handler as part of this event
+  public AnEvent(Object source) {
+    super(source);
+  }
+}
+class AnEventListener {
+  @EventListener
+  public void onAnEvent(AnEvent event) {
+    // handle the event
+  }
+}
+class AnEventSource {
+  @Autowired
+  private ApplicationEventPublisher publisher;
+  public void action() {
+    AnEvent event = new AnEvent(this);
+    publisher.publishEvent(event);
+  }
+}
+-----------------------------------------------------------------------------------------------------------
+Spring Boot Application Events & Listeners
+------------------------------------------
+During the time of starting the Spring boot Application using SpringApplication.run(...) it performs various different activities or steps in bringing up the spring boot application like 
+1. create empty environment object
+2. detect and load external configuration into environment object
+3. print banner etc...
+
+During the time of startup while perform these activities SpringApplication publishes different types of events allowing us to bind listeners to add our own customization logic to be executed as part of startup processes with that stage. That is where Spring boot events and listeners are used.
+  
+Here SpringApplication class acts as a source in publishing pre-defined set of events representing different stages of startup. so programmer has to write listener to handle and perform additional activities aspart of the startup.  
+  
+What are the different types of events published by SpringApplication class?
+1. ApplicationStartingEvent = When we call SpringApplication.run() method before it begins performing any operation it will publish ApplicationStartingEvent to indicate begin of the execution.
+  
+2. ApplicationEnvironmentPreparedEvent = The environment object has been created by identifying all the external configuration but before instantiating the ioc container.
+
+3. ApplicationPreparedEvent = After identifying the ioc container, after instantiating the ioc container by loading all the bean definitions into it, but before instantiating the bean definitions it will publish preparedEvent.
+
+4. ApplicationStartedEvent = After ioc container finished instantiating all of the bean definitions within it , it publishes ApplicationStartedEvent
+
+5. ApplicationReadyEvent = After completing the execution of CommandLineRunners and ApplicationRunners before it returns the reference of ioc container to the program it publishes ApplicationReadyEvent
+
+6. ApplicationFailedEvent = During the above stage of startup if any failure has been encourted representing the failure it publishes ApplicationFailedEvent and terminates
+
+  
+class MyApplicationStartedEventListener {
+  @EventListener
+  public void onApplicationStartedEvent(ApplicationStartedEvent event) {
+  
+  }
+}
+
+@SpringBootApplication
+class EventApplication {
+  public static void main(String[] args) {
+    MyApplicationStartedEventListener listener = new MyApplicationStartedEventListener();
+    SpringApplication springApplication = new SpringApplicationBuilder(EventApplication.class).listeners(listener).build();
+    ApplicationContext context = springApplication.run(args);
+    // before we get control listener will be called
+    
+    
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

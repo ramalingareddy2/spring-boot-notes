@@ -1,0 +1,151 @@
+How to configure primitive attributes of our application components in spring boot with our own supplied values?
+We can externalize the values with which we want to configure our application components by writing them as part of 
+1. application.properties
+2. application.yml
+
+There are lot of spring boot auto-configuration properties goes into application.properties|yaml, so it is not recommended to write our application component property values in the same configuration files. Keep our class attribute values separately in another properties|yaml file and use for injection.
+
+@Component  
+class Passport {
+  @Value("${passportNo}")
+  int passportNo;
+  @Value("${passportHolderName}")
+  String passportHolderName;
+  @Value("${dob}")
+  @DateFormat(pattern="dd-MM-yyyy")
+  Date dob;
+  @Value("${gender}")
+  String gender;
+  @Value("${issuedDate}")
+  @DateFormat(pattern="dd-MM-yyyy")
+  Date issuedDate;
+  @Value("${issuedAuthority}")
+  String issuedAuthority;
+  @Value("${expiryDate}")
+  @DateFormat(pattern="dd-MM-yyyy")
+  Date expiryDate;
+  
+  // accessors
+}
+  
+attributes.properties
+----------------------
+passportNo=2939
+passportHolderName=Duke
+dob=10/01/1999
+gender=Male
+issuedDate=10/03/2021
+issuedAuthority=Passport Office Hyderabad
+expiryDate=10/03/2031
+  
+@SpringBootApplication  
+@PropertySource("classpath:attributes.properties")  
+class ConfigPropsApplication {
+  public static void main(String[] args) {
+    ApplicationContext context = SpringApplication.run(ConfigPropsApplication.class, args);
+    Passport passport = context.getBean(Passport.class);
+    // print
+  }  
+}  
+  
+Here instead of using attributes.properties can we replace with attributes.yml. But when we use @PropertySource annotation in loading attributes.yml, it will fail because PropertySource cannot read yaml files and load into Environment object.
+Instead we write the same configuration in application.yml, because it is loaded by SpringApplication class using snakeyml library internally.
+  
+If we want to use our own YML file to be loaded into Environment object of ioc container and want to use for configuration our components there are 2 ways of doing it.
+1. YamlPropertyResourceLoader
+2. YamlFactoryBean
+
+1. YamlPropertyResourceLoader
+This class helps us in reading the Yaml file and convert into PropertySource object, so that it can be loaded into Environment object of the ioc container.
+  
+We need to load the PropertySource we have read using YamlPropertyResourceLoader into Environment object of ioc container after ioc container has been created, before ioc container begins instantiating the objects of the bean definitions.
+We can use ApplicationContextInitializer for performing some initialization before ioc container begins instantiating the object for the bean definitions.
+  
+
+class YamlPropertySourceApplicationContextInitialzier implements ApplicationContextInitializer {
+  public void initialize(ConfigurableApplicationContext context) {
+    YamlPropertyResourceLoader yamlPropertyResourceLoader = null;
+    ConfigurableEnvironment env = null;
+
+    yamlPropertyResourceLoader = new YamlPropertyResourceLoader();
+    yamlPropertyResourceLoader.load(context.getResource("attributes.yml"));
+    
+    Set<PropertySource<?>> propertySources = yamlPropertyResourceLoader.getObject();
+    env = context.getEnvironment();
+    
+    for(PropertySource<?> propertySource: propertySources) {
+      env.getPropertySources().addLast(propertySource);
+    }
+    
+  }
+}
+
+classpath:attributes.yml
+---
+passport:
+  passportNo: 290322
+  passportHolderName: Rock
+  dob: 23-02-1999
+  gender: Male
+  issuedDate: 12-03-2020
+  issuedAuthority: Passport Authority Hyderabad
+  expiryDate: 13-03-2030
+...
+    
+@SpringBootApplication  
+class ConfigPropsApplication {
+  public static void main(String[] args) {
+    SpringApplication springApplication = new SpringApplicationBuilder(ConfigPropsApplication.class).initializers(new YamlPropertySourceApplicationContextInitialzier()).build();
+    
+    ApplicationContext context = springApplication.run(args);
+    
+    Passport passport = context.getBean(Passport.class);
+    // print
+  }  
+}  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

@@ -1,0 +1,129 @@
+There are 2 ways in loading YAML into the Environment object
+1. YamlPropertySourceLoader | 
+2. YamlPropertyFactoryBean 
+
+We can load the Yaml configuration into Environment object of ioc container using ApplicationContextInitializer, PropertySourceFactory, ApplicationPreparedEvent approach
+
+@SpringBootApplication
+@PropertySource(name="attributes", value="classpath:attributes.yml", factory = YamlConfigPropertySourceFactory.class)
+class BootApplication {
+
+}
+
+class YamlConfigPropertySourceFactory implements PropertySourceFactory {
+  public PropertySource createPropertySource(String name, EncodedResource encodedResource) {
+    PropertiesPropertySource propertySource = null;
+    YamlPropertyFactory yamlPropertyFactory = null;
+    Properties props = null;
+    
+    yamlPropertyFactoryBean = new YamlPropertyFactoryBean();
+    yamlPropertyFactoryBean.setResources(encodedResource.getResource());
+    props = yamlPropertyFactoryBean.getObject();
+    
+    propertySource = new PropertiesPropertySource(props);
+    return propertySource;
+  }
+}
+-------------------------------------------------------------------------------------------------------------
+Spring Boot Profiles
+
+Spring profiles is used for switching the application from one environment to another environment easily. Spring profiles allows to keep mulitple copies of the application configuration with different values pertaining to different environments. So that at the time of running the application we can instruct ioc container about which environment are we running the application, so the ioc container picks the relavant configuration based on environment and executes.
+This helps in no change in code, to switch between different environments of the application.
+  
+How to work with profiles in Spring Framework?  
+
+// source code directly use stereotype annotations
+@Component  
+class JdbcDataSource {
+  @Value("db.driverClassname")
+  private String driverClassname;
+  @Value("db.url")
+  private String url;
+  @Value("db.username")
+  private String username;
+  @Value("db.password")
+  private String password;
+  
+  // accessors
+  Connection getConnection() {}
+}  
+
+// no source code
+class TransactionManager {
+  JdbcDataSource jdbcDataSource;
+  int timeout;
+  boolean autocommit;
+  // accessors
+}
+
+@ComponentScan(basePackages = {"com.profiles.beans"})
+abstract class BaseConfig {
+  @Autowired
+  private Environment env;
+  
+  @Bean
+  public TransactionManager transactionManager(JdbcDataSource jdbcDataSource) {
+    TransactionManager transactionManager = new TransactionManager();
+    transactionManager.setJdbcDataSource(jdbcDataSource);
+    transactionManager.setTimeout(Integer.parseInt(env.getProperty("tm.timeout")));
+    transactionManager.setAutoCommit(new Boolean(env.getProperty("tm.autocommit")));
+    return transactionManager;
+  }
+}
+
+@Configuration
+@PropertySource("classpath:appdev.properties")
+@Profile("dev")
+class DevJavaConfig extends BaseConfig {
+}
+
+@Configuration
+@PropertySource("classpath:apptest.properties")
+@Profile("test")
+class TestJavaConfig extends BaseConfig {
+}
+
+
+
+appdev.properties
+-----------------
+db.driverClassname=com.mysql.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306
+db.username=root
+db.password=root
+tm.timeout=10
+tm.autocomit=false
+  
+apptest.properties
+-----------------
+db.driverClassname=com.jdbc.driverOracleDriver
+db.url=jdbc:oracle:thin:@localhost:1521:xe
+db.username=root
+db.password=welcome1
+tm.timeout=20
+tm.autocomit=true
+  
+Test.java
+ApplicationContext context = new AnnocationConfigApplicationContext();
+context.register(DevConfig.class, TestConfig.class);
+((ConfigurableApplicationContext)context).setActiveProfile("test");
+context.refresh();
+
+JdbcDataSource jdbcDataSource = context.getBean(JdbcDataSource.class);
+sop(jdbcDataSource);
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+

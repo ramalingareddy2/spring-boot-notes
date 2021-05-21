@@ -1,0 +1,93 @@
+What is spring boot executable jar, what is purpose of it?
+Spring Boot has provided a special jar packaging structure with their own classloaders based on the jar structure they defined. Using the spring boot packaging structure we can delivery a spring boot application as a single packaged distribution including dependency jars inside the application jar along with application components.
+  
+How is this different from uber/fat jar?
+In fat/uber jar we cannot identify what dependencies are being used as part of the application and what are their versions. Incase of spring boot executable jar, the dependent jars are kept inside the boot jar so that we can easily identify which jar dependencies of what version we are using as part of our application.
+  
+What is the structure of a Spring boot executable jar?
+application.jar
+|-META-INF
+  |-manifest.mf
+    |-Main-Class: JarLauncher|WarLauncher
+    |-Start-Class: Main Application
+|-BOOT-INF
+  |-clasess
+    |-*.class
+  |-lib
+    |-*.jar
+|-org
+  |-springframework
+    |-boot
+      |-loader
+        |-Launcher.class
+        |-JarLauncher.class
+        |-WarLauncher.class
+        
+java -jar application.jar
+The spring-boot-maven-plugin takes care of creating the spring boot executable jar.
+In maven to package the application as spring boot executable jar we need run the below command
+mvn clean verify
+mvn spring-boot:run = to run spring boot application from CLI
+
+In gradle we need to run gradle bootJar to build an executable jar.
+gradle bootJar = build executable jar
+gradle bootRun = to the spring boot application from CLI
+----------------------------------------------------------------------------------------------------------------
+What is @SpringBootApplication annotation?
+The @SpringBootApplication annotation imports 3 other annotations on to the class.
+  1. @Configuration
+  2. @ComponentScan
+  3. EnableAutoConfiguration
+
+Spring Boot usually uses the main class itself as an @Configuration class and the default @ComponentScan base package is the main class package and its subpackages. In addition @EnableAutoConfiguration run the AutoConfiguration classes provided as apart of the Spring Boot 
+  
+package com.eg.beans;  
+@Component  
+class A {}
+
+@Configuration
+@ComponentScan(basePackage="com.eg.beans")
+class JavaConfig {}
+
+class Test {
+  public static void main(String[] args) {
+    ApplicationContext context = new AnnotationConfigApplicationContext(JavaConfig.class);
+    A a = context.getBean("a", A.class);
+  }
+}
+          
+@Configuration
+@ComponentScan(basePackage="current package of the Testclass*")
+@EnableAutoConfiguration
+class Test {
+  public static void main(String[] args) {
+    
+  }
+}          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
